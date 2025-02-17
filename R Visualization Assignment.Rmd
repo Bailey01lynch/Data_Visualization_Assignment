@@ -1,0 +1,133 @@
+---
+title: "NEU 290_DA2_Lynch_Bailey"
+author: "Bailey Lynch"
+output:
+  html_document: default
+---
+
+```{r, include=FALSE}
+# Do not edit this code block/chunk!
+knitr::opts_chunk$set(
+  echo = TRUE, message=FALSE, warning = FALSE, fig.width = 16/2, 
+  fig.height = 9/2
+)
+```
+
+# Visualization and Interpretation Exercises
+This document explores several questions about maternal and newborn health by visualizing data in the 2004 North Carolina births registry. Make sure to replace all questions with your answers and to fill in code in each code chunk with a ... in it.
+
+##Setup Libraries
+Set up the libraries required for visualizations.
+```{r}
+#If you get an error saying dplyr or ggplot2 have not been found, then you have not installed them yet! To install them, "uncomment" the next two lines by deleting the hash/pound symbol and try again!
+#install.packages("dyplr")
+#install.packages("ggplot2")
+library(dplyr)
+library(ggplot2)
+```
+## Load Data
+The following loads a dataset that was released in 2004 from the state of North Carolina and includes information about about the maternal and newborn health from 800 randomly chosen live births in that state.
+
+```{r}
+# Run this to load the data! It's OK if it doesn't make sense yet!
+id <- '19vUudLrACnxKpP-X0M_6wGdf2Suid1_a'
+births <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
+```
+## Explore the Data
+Have a look at the variables recorded in this dataset. Each row is one birth. 
+
+```{r}
+glimpse(births)
+```
+Most of the variables have transparent names, but some are a little less apparent:
+
+- fage - father's age at time of birth
+- mage - mother's age at time of birth
+- weeks - duration of pregnancy in weeks
+- visits - the number of prenatal care visits to a clinician that the mother attended during pregnancy
+- gained - the maximum amount of weight gained by the mother during pregnancy (in pounds)
+- weight - the weight of the newborn infant (in pounds)
+- gender - the gender identified on NC birth registry for the newborn infant
+
+## Exercise 0: Example
+This "Exercise" is an example to show how you could format exercises 1-5. Your exercises should look similar to this, with one or two code chunks, followed by your answer to the provided question (having deleted the original question text).
+```{r}
+births %>% 
+  ggplot(aes(x = weeks, y = visits)) + 
+  geom_point() +
+    labs(x = "Length of pregnancy (in weeks)",
+         y = "Number of Prenatal Visits",
+         title = "Length of Pregnancy and Prenatal Care")
+```         
+
+As seen in the above figure, there is perhaps a week relationship between length of pregnancy and number of visits to prenatal care appointments. Mother's with shorter pregnancies rarely attended that many visits, but this is not surprising as there was simply less time to attend or schedule such visits. Some mothers who had longer pregnancies also attended few or even zero appointments.
+
+## Exercise 1: Pregnancy Duration
+```{r}
+births %>% 
+  ggplot(aes(x = weeks)) + 
+  geom_histogram(bins=26) +
+    labs(x = "Length of pregnancy (in weeks)",
+         y = "Number of Births",
+         title = "Length of Pregnancy for NC Live Births")
+```
+
+Based on this graph, the typical pregnancy in North Carolina lasts 39 weeks. 37 to 41 week pregnancy lengths look to be of typical range according to this graph because the number of births within these weeks is much higher than any other duration above or below 37-41wk range. 
+
+
+## Exercise 2: Birthweight and Recorded Gender
+```{r}
+births %>% 
+  ggplot(aes(x = weight)) + 
+  geom_histogram(bins=13) + facet_grid(~gender) +
+    labs(x = "Birthweight (in pounds)",
+         y = "Number of Births",
+         title = "Birthweight split by gender of newborn")
+```
+
+It looks like the typical birth weight for male newborns is just above 7.5lbs and the typical birthweight for newborn females is just below 7.5lbs. The difference doesnt seem to be very drastic since both graphs look relatively similar. 
+
+## Exercise 3: Birthweight, Mother's Maturity, & Mother's Smoking Habit
+```{r}
+births %>% 
+  ggplot(aes(x=mature, y = weight)) + geom_boxplot() + 
+    labs(x = "Mother's Maturity Status",
+         y = "Birthweight (in pounds)",
+         title = "Birthweight by Maturity of Mother")
+```
+
+```{r}
+births %>% 
+  ggplot(aes(x=habit, y = weight)) + geom_boxplot() + 
+    labs(x = "Mother's Smoking Habit",
+         y = "Birthweight (in pounds)",
+         title = "Birthweight by Mother's Smoking Habit")
+```
+
+Based on this data, it looks like there is a larger difference between birthweights of nonsmokers and smokers that that of mature mothers vs. younger mothers. You can see this by looking at the box plots and looking at how the box plot for smokers is much more noticable lower than that of the nonsmoker box plot whereas the boxplots for the maturity status of the mother isn't as noticeable. 
+
+
+## Exercise 4: Birthweight and length of pregnancy
+```{r}
+births %>% 
+  ggplot(aes(x=weeks, y = weight, color= premie)) + geom_point() + 
+    labs(x = "Pregnancy Duration (Weeks)",
+         y = "Birthweight (in pounds)",
+         title = "Birthweight by Pregnancy Duration")
+```
+
+There seems to be some wiggle room in birthweight based on duration. 35 weeks and younger have lower birthweights but 35wks and up to full term seem to produce around the same birthweights. 
+
+## Exercise 5: Birthweight and length of pregnancy
+```{r}
+births %>% 
+  ggplot(aes(x=premie, fill= lowbirthweight)) + geom_bar() + 
+    labs(x = "Pregnancy Duration",
+         y = "Number of Births",
+         title = "Number of low birthweight newborns by premie status")
+```
+
+A very small proportion of full-term babies in NC were identified as having a low birthweight, maybe 5% or less. On the other hand, 20-25% of premie babies were identified as having a low birthweight. I would say that it wouldn't be unusual to have a premie baby with typical weight in NC since 75-80% of the recorded briths in this category were of normal weight. I would say that having a premie baby increases your chances of having a low birthweight baby significantly.  
+
+# That's it for this exercise!
+Make sure to save your .Rmd Markdown file (with File -> Save) and *also* knit your Markdown to an .html file (Click the Knit button). Once the file has been knit, scroll through to make sure everything looks right. Then, find the knit .html file on your computer by going to the folder that you saved the .Rmd file in (when you knit the Markdown, the window that comes up should have the folder name shown at the top of the window). Upload that .html file to Canvas as your submission!
